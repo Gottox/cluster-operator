@@ -211,7 +211,7 @@ func publishToQueue(rabbitmqHostName, rabbitmqPort, rabbitmqUsername, rabbitmqPa
 }
 
 func connectHTTPS(username, password, hostname, httpsNodePort, caFilePath string) (err error) {
-	// create TLS config for amqps request
+	// create TLS config for https request
 	cfg := new(tls.Config)
 	cfg.RootCAs = x509.NewCertPool()
 	ca, err := ioutil.ReadFile(caFilePath)
@@ -222,14 +222,12 @@ func connectHTTPS(username, password, hostname, httpsNodePort, caFilePath string
 	cfg.RootCAs.AppendCertsFromPEM(ca)
 
 	transport := &http.Transport{TLSClientConfig: cfg}
-	rmqc, err := mgmtApi.NewTLSClient(fmt.Sprintf("http://%v:%v", hostname, httpsNodePort), username, password, transport)
+	rmqc, err := mgmtApi.NewTLSClient(fmt.Sprintf("https://%v:%v", hostname, httpsNodePort), username, password, transport)
 	if err != nil {
 		return err
 	}
 
-	rec, err := rmqc.Overview()
-	//TODO: remove
-	fmt.Printf("RMQ Overview: %v\n\n", rec)
+	_, err = rmqc.Overview()
 
 	return err
 }

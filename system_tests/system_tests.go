@@ -314,7 +314,7 @@ CONSOLE_LOG=new`
 	})
 
 	Context("TLS", func() {
-		FWhen("TLS is correctly configured", func() {
+		When("TLS is correctly configured", func() {
 			var (
 				cluster       *rabbitmqv1beta1.RabbitmqCluster
 				hostname      string
@@ -330,22 +330,22 @@ CONSOLE_LOG=new`
 				Expect(createRabbitmqCluster(ctx, rmqClusterClient, cluster)).To(Succeed())
 				waitForRabbitmqRunning(cluster)
 
-				// Passing a single hostname for certificate creation works because
+				// Passing a single hostname for certificate creation
 				// the AMPQS client is connecting using the same hostname
 				hostname = kubernetesNodeIp(ctx, clientSet)
 				caFilePath = createTLSSecret("rabbitmq-tls-test-secret", namespace, hostname)
 
-				// Update CR with TLS secret name
+				// Update RabbitmqCluster with TLS secret name
 				Expect(updateRabbitmqCluster(ctx, rmqClusterClient, cluster.Name, cluster.Namespace, func(cluster *rabbitmqv1beta1.RabbitmqCluster) {
 					cluster.Spec.TLS.SecretName = "rabbitmq-tls-test-secret"
 				})).To(Succeed())
 				waitForTLSUpdate(cluster)
 			})
 
-			//AfterEach(func() {
-			//	Expect(rmqClusterClient.Delete(context.TODO(), cluster)).To(Succeed())
-			//	Expect(k8sDeleteSecret("rabbitmq-tls-test-secret", namespace)).To(Succeed())
-			//})
+			AfterEach(func() {
+				Expect(rmqClusterClient.Delete(context.TODO(), cluster)).To(Succeed())
+				Expect(k8sDeleteSecret("rabbitmq-tls-test-secret", namespace)).To(Succeed())
+			})
 
 			It("RabbitMQ responds to requests over secured protocols", func() {
 				By("talking AMQPS", func() {
@@ -364,15 +364,16 @@ CONSOLE_LOG=new`
 				})
 
 				By("connecting to management API over TLS", func() {
-					//TODO: reset next line to: httpsNodePort = rabbitmqNodePort(ctx, clientSet, cluster, "https")
 					var err error
 
-					httpsNodePort = "15671"
+					httpsNodePort = rabbitmqNodePort(ctx, clientSet, cluster, "https")
+
 					username, password, err = getUsernameAndPassword(ctx, clientSet, "rabbitmq-system", "tls-test-rabbit")
 					Expect(err).NotTo(HaveOccurred())
 
 					// try to connect to a management API endpoint over TLS
-					Expect(connectHTTPS(username, password, hostname, httpsNodePort, caFilePath)).To(Succeed())
+					err = connectHTTPS(username, password, hostname, httpsNodePort, caFilePath)
+					Expect(err).NotTo(HaveOccurred())
 				})
 			})
 		})
