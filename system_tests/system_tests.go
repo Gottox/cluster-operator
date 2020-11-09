@@ -46,7 +46,7 @@ var _ = Describe("Operator", func() {
 			waitForRabbitmqRunning(cluster)
 
 			hostname = kubernetesNodeIp(ctx, clientSet)
-			port = rabbitmqNodePort(ctx, clientSet, cluster, "management")
+			port = rabbitmqNodePort(ctx, clientSet, cluster, "http")
 
 			var err error
 			username, password, err = getUsernameAndPassword(ctx, clientSet, cluster.Namespace, cluster.Name)
@@ -246,7 +246,7 @@ CONSOLE_LOG=new`
 			waitForRabbitmqRunning(cluster)
 
 			hostname = kubernetesNodeIp(ctx, clientSet)
-			port = rabbitmqNodePort(ctx, clientSet, cluster, "management")
+			port = rabbitmqNodePort(ctx, clientSet, cluster, "http")
 
 			var err error
 			username, password, err = getUsernameAndPassword(ctx, clientSet, cluster.Namespace, cluster.Name)
@@ -302,7 +302,7 @@ CONSOLE_LOG=new`
 			It("works", func() {
 				username, password, err := getUsernameAndPassword(ctx, clientSet, cluster.Namespace, cluster.Name)
 				hostname := kubernetesNodeIp(ctx, clientSet)
-				port := rabbitmqNodePort(ctx, clientSet, cluster, "management")
+				port := rabbitmqNodePort(ctx, clientSet, cluster, "http")
 				Expect(err).NotTo(HaveOccurred())
 				assertHttpReady(hostname, port)
 

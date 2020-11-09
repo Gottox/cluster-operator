@@ -127,7 +127,7 @@ var _ = Context("Services", func() {
 						},
 					}
 					builder.Instance = instance
-					serviceBuilder := builder.ClientService()
+					serviceBuilder := builder.Service()
 					svc := &corev1.Service{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "foo-service",
