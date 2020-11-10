@@ -310,7 +310,7 @@ management.ssl.cacertfile = /etc/rabbitmq-tls/ca.certificate
 				Expect(configMap.Data).To(HaveKeyWithValue("rabbitmq.conf", expectedRabbitmqConf))
 			})
 
-			When("additional plugins are enabled", func() {
+			When("Web MQTT and Web STOMP are enabled", func() {
 				It("adds TLS config for the additional plugins", func() {
 					instance = rabbitmqv1beta1.RabbitmqCluster{
 						ObjectMeta: metav1.ObjectMeta{
