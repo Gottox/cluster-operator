@@ -493,7 +493,6 @@ func (builder *StatefulSetBuilder) podTemplateSpec(annotations, labels map[strin
 		})
 
 		if builder.Instance.MutualTLSEnabled() {
-
 			if builder.Instance.SingleTLSSecret() {
 				//Mount CaCert in TLS Secret
 				rabbitmqContainerVolumeMounts = append(rabbitmqContainerVolumeMounts, corev1.VolumeMount{
@@ -522,6 +521,19 @@ func (builder *StatefulSetBuilder) podTemplateSpec(annotations, labels map[strin
 					MountPath: "/etc/rabbitmq-tls/ca.crt",
 					SubPath:   "ca.crt",
 					ReadOnly:  true,
+				})
+			}
+			if builder.Instance.AdditionalPluginEnabled("rabbitmq_web_mqtt") {
+				ports = append(ports, corev1.ContainerPort{
+					Name:          "web-mqtt-tls",
+					ContainerPort: 15676,
+				})
+			}
+
+			if builder.Instance.AdditionalPluginEnabled("rabbitmq_web_stomp") {
+				ports = append(ports, corev1.ContainerPort{
+					Name:          "web-stomp-tls",
+					ContainerPort: 15673,
 				})
 			}
 		}
